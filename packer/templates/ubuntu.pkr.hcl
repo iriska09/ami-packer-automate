@@ -6,21 +6,26 @@ variable "source_ami" {}
 source "amazon-ebs" "ubuntu" {
   region              = var.aws_region
   instance_type       = "t3.micro"
-  subnet_id           = var.subnet_id
-  iam_instance_profile = var.iam_profile
-  ami_name            = "golden-ami-ubuntu-24"
-  source_ami          = var.source_ami
   ssh_username        = "ubuntu"
+  source_ami          = var.source_ami
+  subnet_id           = var.subnet_id
+  associate_public_ip_address = true
+  user_data = <<EOF
+#!/bin/bash
+echo "Enabling SSH access..."
+systemctl enable ssh
+systemctl start ssh
+EOF
 }
 
 build {
   sources = ["source.amazon-ebs.ubuntu"]
 
-  provisioner "ansible" {
-    playbook_file = "ansible/playbooks/cis-hardening.yml"
-  }
-
   provisioner "shell" {
     script = "packer/scripts/install_packages.sh"
+  }
+
+  provisioner "ansible" {
+    playbook_file = "ansible/playbooks/cis-hardening.yml"
   }
 }

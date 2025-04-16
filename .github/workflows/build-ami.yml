@@ -1,4 +1,4 @@
-name: Build Golden AMI
+name: Build Golden AMIs
 
 on:
   workflow_dispatch:  # Allows manual trigger from GitHub UI
@@ -7,16 +7,8 @@ jobs:
   build-ami:
     runs-on: ubuntu-latest
     permissions:
-      id-token: write  # Enables OIDC authentication
+      id-token: write
       contents: read
-
-    env:
-      AWS_REGION: ${{ secrets.AWS_REGION }}
-      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
-      AWS_IAM_INSTANCE_PROFILE: ${{ secrets.AWS_IAM_INSTANCE_PROFILE }}
-      AWS_SUBNET_ID: ${{ secrets.AWS_SUBNET_ID }}
-      AWS_SOURCE_AMAZON_AMI: ${{ secrets.AWS_SOURCE_AMAZON_AMI }}
-      AWS_SOURCE_UBUNTU_AMI: ${{ secrets.AWS_SOURCE_UBUNTU_AMI }}
 
     steps:
       - name: Checkout repository
@@ -25,8 +17,8 @@ jobs:
       - name: Configure AWS Credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ env.AWS_ROLE_ARN }}
-          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Install Packer
         run: |
@@ -36,11 +28,6 @@ jobs:
 
       - name: Initialize Packer Plugins
         run: packer init packer/plugins.pkr.hcl
-
-      - name: Validate File Existence
-        run: |
-          ls -lh ansible/playbooks/cis-hardening.yml || (echo "❌ Ansible playbook missing!" && exit 1)
-          ls -lh packer/scripts/install_packages.sh || (echo "❌ Install script missing!" && exit 1)
 
       - name: Build Amazon Linux 3 AMI
         run: |

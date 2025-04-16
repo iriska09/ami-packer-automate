@@ -9,7 +9,7 @@ elif [[ -f /usr/bin/dnf ]]; then
     sudo dnf install -y curl wget unzip vim awscli prometheus-node-exporter
 fi
 
-# Enable audit logging
-echo "Enabling audit logging..."
-sudo systemctl enable auditd
-sudo systemctl start auditd
+# Enable SSH logging
+echo "Enabling SSH logging..."
+sudo systemctl enable ssh
+sudo systemctl restart ssh
