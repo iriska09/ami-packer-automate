@@ -48,7 +48,6 @@ jobs:
             -var "subnet_id=${{ secrets.AWS_SUBNET_ID }}" \
             -var "iam_instance_profile=${{ secrets.AWS_IAM_INSTANCE_PROFILE }}" \
             -var "source_ami=${{ secrets.AWS_SOURCE_AMAZON_AMI }}" \
-            -var "key_pair_name=${{ secrets.AWS_KEY_PAIR_NAME }}" \
             packer/templates/amazon-linux.pkr.hcl
 
       - name: Build Ubuntu 24.04 AMI
