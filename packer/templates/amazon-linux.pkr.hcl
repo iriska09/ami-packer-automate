@@ -1,18 +1,7 @@
-variable "aws_region" {
-  default = "${var.aws_region}"
-}
-
-variable "subnet_id" {
-  default = "${var.aws_subnet_id}"
-}
-
-variable "iam_profile" {
-  default = "${var.aws_iam_instance_profile}"
-}
-
-variable "source_ami" {
-  default = "${var.aws_source_amazon_ami}"
-}
+variable "aws_region" {}
+variable "subnet_id" {}
+variable "iam_profile" {}
+variable "source_ami" {}
 
 source "amazon-ebs" "amazon_linux" {
   region              = var.aws_region

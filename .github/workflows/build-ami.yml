@@ -35,7 +35,19 @@ jobs:
           sudo apt-get update && sudo apt-get install -y packer
 
       - name: Build Amazon Linux 3 AMI
-        run: packer build packer/templates/amazon-linux.pkr.hcl
+        run: |
+          packer build \
+            -var "aws_region=${{ secrets.AWS_REGION }}" \
+            -var "subnet_id=${{ secrets.AWS_SUBNET_ID }}" \
+            -var "iam_profile=${{ secrets.AWS_IAM_INSTANCE_PROFILE }}" \
+            -var "source_ami=${{ secrets.AWS_SOURCE_AMAZON_AMI }}" \
+            packer/templates/amazon-linux.pkr.hcl
 
       - name: Build Ubuntu 24.04 AMI
-        run: packer build packer/templates/ubuntu.pkr.hcl
+        run: |
+          packer build \
+            -var "aws_region=${{ secrets.AWS_REGION }}" \
+            -var "subnet_id=${{ secrets.AWS_SUBNET_ID }}" \
+            -var "iam_profile=${{ secrets.AWS_IAM_INSTANCE_PROFILE }}" \
+            -var "source_ami=${{ secrets.AWS_SOURCE_UBUNTU_AMI }}" \
+            packer/templates/ubuntu.pkr.hcl
