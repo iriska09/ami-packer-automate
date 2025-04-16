@@ -1,0 +1,41 @@
+name: Build Golden AMI
+
+on:
+  workflow_dispatch:  # Manual trigger from GitHub UI
+
+jobs:
+  build-ami:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # Enables OIDC authentication
+      contents: read
+      
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+      AWS_IAM_INSTANCE_PROFILE: ${{ secrets.AWS_IAM_INSTANCE_PROFILE }}
+      AWS_SUBNET_ID: ${{ secrets.AWS_SUBNET_ID }}
+      AWS_SOURCE_AMAZON_AMI: ${{ secrets.AWS_SOURCE_AMAZON_AMI }}
+      AWS_SOURCE_UBUNTU_AMI: ${{ secrets.AWS_SOURCE_UBUNTU_AMI }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Install Packer
+        run: |
+          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+          sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+          sudo apt-get update && sudo apt-get install -y packer
+
+      - name: Build Amazon Linux 3 AMI
+        run: packer build packer/templates/amazon-linux.pkr.hcl
+
+      - name: Build Ubuntu 24.04 AMI
+        run: packer build packer/templates/ubuntu.pkr.hcl

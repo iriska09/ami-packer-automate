@@ -1,0 +1,22 @@
+- name: CIS Hardening
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Update system packages
+      ansible.builtin.package:
+        name: "*"
+        state: latest
+
+    - name: Disable Root Login
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PermitRootLogin'
+        line: 'PermitRootLogin no'
+      notify: Restart SSH
+
+  handlers:
+    - name: Restart SSH
+      ansible.builtin.service:
+        name: sshd
+        state: restarted
