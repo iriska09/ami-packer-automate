@@ -3,10 +3,17 @@
   become: true
 
   tasks:
-    - name: Update system packages
-      ansible.builtin.package:
+    - name: Update system packages (Ubuntu)
+      ansible.builtin.apt:
+        update_cache: yes
+        state: latest
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Update system packages (Amazon Linux)
+      ansible.builtin.dnf:
         name: "*"
         state: latest
+      when: ansible_distribution == "Amazon"
 
     - name: Disable Root Login
       ansible.builtin.lineinfile:

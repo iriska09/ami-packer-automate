@@ -1,8 +1,7 @@
 name: Build Golden AMI
 
 on:
-    workflow_dispatch:
-  
+  workflow_dispatch:  # Allows manual trigger from GitHub UI
 
 jobs:
   build-ami:
@@ -37,6 +36,11 @@ jobs:
 
       - name: Initialize Packer Plugins
         run: packer init packer/plugins.pkr.hcl
+
+      - name: Validate File Existence
+        run: |
+          ls -lh ansible/playbooks/cis-hardening.yml || (echo "❌ Ansible playbook missing!" && exit 1)
+          ls -lh packer/scripts/install_packages.sh || (echo "❌ Install script missing!" && exit 1)
 
       - name: Build Amazon Linux 3 AMI
         run: |

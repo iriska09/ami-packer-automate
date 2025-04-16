@@ -23,10 +23,10 @@ build {
   sources = ["source.amazon-ebs.amazon_linux"]
 
   provisioner "ansible" {
-    playbook_file = "../ansible/playbooks/cis-hardening.yml"
+    playbook_file = "ansible/playbooks/cis-hardening.yml"
   }
 
   provisioner "shell" {
-    script = "../packer/scripts/install_packages.sh"
+    script = "packer/scripts/install_packages.sh"
   }
 }
