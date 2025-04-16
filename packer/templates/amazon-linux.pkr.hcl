@@ -13,12 +13,6 @@ source "amazon-ebs" "amazon_linux" {
   ssh_username        = "ec2-user"
   associate_public_ip_address = true
 
-  launch_block_device_mappings {
-    device_name = "/dev/xvda"
-    volume_size = 20
-    volume_type = "gp3"
-    delete_on_termination = true
-  }
 }
 
 build {
