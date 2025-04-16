@@ -1,7 +1,7 @@
 name: Build Golden AMI
 
 on:
-  workflow_dispatch:  # Manual trigger from GitHub UI
+  workflow_dispatch:  # Allows manual trigger from GitHub UI
 
 jobs:
   build-ami:
@@ -9,7 +9,7 @@ jobs:
     permissions:
       id-token: write  # Enables OIDC authentication
       contents: read
-      
+
     env:
       AWS_REGION: ${{ secrets.AWS_REGION }}
       AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
@@ -35,7 +35,7 @@ jobs:
           sudo apt-get update && sudo apt-get install -y packer
 
       - name: Initialize Packer Plugins
-        run: packer init packer/templates/amazon-linux.pkr.hcl
+        run: packer init packer/plugins.pkr.hcl
 
       - name: Build Amazon Linux 3 AMI
         run: |
