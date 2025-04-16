@@ -1,7 +1,7 @@
 name: Build Golden AMIs
 
 on:
-  workflow_dispatch:  # Allows manual trigger from GitHub UI
+  workflow_dispatch:
 
 jobs:
   build-ami:
@@ -29,20 +29,16 @@ jobs:
       - name: Initialize Packer Plugins
         run: packer init packer/plugins.pkr.hcl
 
+      - name: Debug SSH Key Injection
+        run: |
+          echo "Checking SSH key injection..."
+          ssh -o "StrictHostKeyChecking=no" -i ~/.ssh/id_rsa ec2-user@INSTANCE_IP || echo "❌ SSH Authentication Failed"
+
       - name: Build Amazon Linux 3 AMI
         run: |
           packer build \
             -var "aws_region=${{ secrets.AWS_REGION }}" \
             -var "subnet_id=${{ secrets.AWS_SUBNET_ID }}" \
-            -var "iam_profile=${{ secrets.AWS_IAM_INSTANCE_PROFILE }}" \
+            -var "iam_instance_profile=${{ secrets.AWS_IAM_INSTANCE_PROFILE }}" \
             -var "source_ami=${{ secrets.AWS_SOURCE_AMAZON_AMI }}" \
             packer/templates/amazon-linux.pkr.hcl
-
-      - name: Build Ubuntu 24.04 AMI
-        run: |
-          packer build \
-            -var "aws_region=${{ secrets.AWS_REGION }}" \
-            -var "subnet_id=${{ secrets.AWS_SUBNET_ID }}" \
-            -var "iam_profile=${{ secrets.AWS_IAM_INSTANCE_PROFILE }}" \
-            -var "source_ami=${{ secrets.AWS_SOURCE_UBUNTU_AMI }}" \
-            packer/templates/ubuntu.pkr.hcl
