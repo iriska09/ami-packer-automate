@@ -11,6 +11,7 @@ source "amazon-ebs" "amazon_linux" {
   ssh_username            = "ec2-user"
   ami_name                = "secure-amazon-linux3-2025"
   associate_public_ip_address = true
+  ssh_private_key_file    = "~/.ssh/id_rsa"  # ✅ Explicitly set private key
 
   metadata_options {
     http_tokens = "optional"
