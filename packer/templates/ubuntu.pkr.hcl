@@ -9,6 +9,7 @@ source "amazon-ebs" "ubuntu" {
   ssh_username        = "ubuntu"
   source_ami          = var.source_ami
   subnet_id           = var.subnet_id
+  ami_name            = "secure-ubuntu"
   associate_public_ip_address = true
   user_data = <<EOF
 #!/bin/bash
