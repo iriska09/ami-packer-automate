@@ -29,16 +29,16 @@ jobs:
       - name: Initialize Packer Plugins
         run: packer init packer/plugins.pkr.hcl
 
-
       - name: Load SSH Key
         run: |
           mkdir -p ~/.ssh  # ✅ Ensure the SSH directory exists
           echo "${{ secrets.PACKER_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-        
 
       - name: Debug Instance IP
         run: |
+          echo "Waiting for instance IP..."
+          sleep 30  # ✅ Ensure instance is fully up before connecting
           aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress'
 
       - name: Build Amazon Linux 3 AMI
@@ -48,6 +48,7 @@ jobs:
             -var "subnet_id=${{ secrets.AWS_SUBNET_ID }}" \
             -var "iam_instance_profile=${{ secrets.AWS_IAM_INSTANCE_PROFILE }}" \
             -var "source_ami=${{ secrets.AWS_SOURCE_AMAZON_AMI }}" \
+            -var "key_pair_name=${{ secrets.AWS_KEY_PAIR_NAME }}" \
             packer/templates/amazon-linux.pkr.hcl
 
       - name: Build Ubuntu 24.04 AMI

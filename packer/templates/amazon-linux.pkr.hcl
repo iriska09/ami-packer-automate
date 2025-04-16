@@ -2,7 +2,7 @@ variable "aws_region" {}
 variable "subnet_id" {}
 variable "iam_instance_profile" {}
 variable "source_ami" {}
-variable "key_pair_name" {}
+variable "key_pair_name" {}  # ✅ Explicitly define key_pair_name
 
 source "amazon-ebs" "amazon_linux" {
   region                  = var.aws_region
@@ -14,7 +14,6 @@ source "amazon-ebs" "amazon_linux" {
   key_pair_name           = var.key_pair_name  # ✅ Uses predefined key
   associate_public_ip_address = true
 
-  # Ensure AWS injects SSH keys correctly
   metadata_options {
     http_tokens = "optional"
   }
@@ -40,4 +39,3 @@ build {
     playbook_file = "ansible/playbooks/cis-hardening.yml"
   }
 }
-
