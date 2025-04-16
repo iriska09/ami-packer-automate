@@ -29,10 +29,14 @@ jobs:
       - name: Initialize Packer Plugins
         run: packer init packer/plugins.pkr.hcl
 
-      - name: Debug SSH Key Injection
+      - name: Load SSH Key
         run: |
-          echo "Checking SSH key injection..."
-          ssh -o "StrictHostKeyChecking=no" -i ~/.ssh/id_rsa ec2-user@INSTANCE_IP || echo "❌ SSH Authentication Failed"
+          echo "${{ secrets.PACKER_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Debug Instance IP
+        run: |
+          aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress'
 
       - name: Build Amazon Linux 3 AMI
         run: |
@@ -41,4 +45,15 @@ jobs:
             -var "subnet_id=${{ secrets.AWS_SUBNET_ID }}" \
             -var "iam_instance_profile=${{ secrets.AWS_IAM_INSTANCE_PROFILE }}" \
             -var "source_ami=${{ secrets.AWS_SOURCE_AMAZON_AMI }}" \
+            -var "key_pair_name=${{ secrets.AWS_KEY_PAIR_NAME }}" \
             packer/templates/amazon-linux.pkr.hcl
+
+      - name: Build Ubuntu 24.04 AMI
+        run: |
+          packer build \
+            -var "aws_region=${{ secrets.AWS_REGION }}" \
+            -var "subnet_id=${{ secrets.AWS_SUBNET_ID }}" \
+            -var "iam_instance_profile=${{ secrets.AWS_IAM_INSTANCE_PROFILE }}" \
+            -var "source_ami=${{ secrets.AWS_SOURCE_UBUNTU_AMI }}" \
+            -var "key_pair_name=${{ secrets.AWS_KEY_PAIR_NAME }}" \
+            packer/templates/ubuntu.pkr.hcl

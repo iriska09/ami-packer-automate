@@ -2,17 +2,19 @@ variable "aws_region" {}
 variable "subnet_id" {}
 variable "iam_instance_profile" {}
 variable "source_ami" {}
+variable "key_pair_name" {}
 
 source "amazon-ebs" "amazon_linux" {
   region                  = var.aws_region
   instance_type           = "t3.micro"
-  ssh_username            = "ec2-user"
   source_ami              = var.source_ami
   subnet_id               = var.subnet_id
+  ssh_username            = "ec2-user"
   ami_name                = "secure-amazon-linux3-2025"
+  key_pair_name           = var.key_pair_name  # ✅ Uses predefined key
   associate_public_ip_address = true
 
-  # ✅ Ensure AWS injects the SSH key properly
+  # Ensure AWS injects SSH keys correctly
   metadata_options {
     http_tokens = "optional"
   }
@@ -38,3 +40,4 @@ build {
     playbook_file = "ansible/playbooks/cis-hardening.yml"
   }
 }
+
