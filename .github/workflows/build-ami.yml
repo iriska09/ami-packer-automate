@@ -29,10 +29,13 @@ jobs:
       - name: Initialize Packer Plugins
         run: packer init packer/plugins.pkr.hcl
 
+
       - name: Load SSH Key
         run: |
+          mkdir -p ~/.ssh  # ✅ Ensure the SSH directory exists
           echo "${{ secrets.PACKER_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+        
 
       - name: Debug Instance IP
         run: |
