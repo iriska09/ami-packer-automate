@@ -31,15 +31,17 @@ jobs:
 
       - name: Load SSH Key
         run: |
-          mkdir -p ~/.ssh  # ✅ Ensure the SSH directory exists
+          mkdir -p ~/.ssh  # ✅ Ensures SSH directory exists
           echo "${{ secrets.PACKER_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
-      - name: Debug Instance IP
+      - name: Get Instance IP
         run: |
-          echo "Waiting for instance IP..."
-          sleep 30  # ✅ Ensure instance is fully up before connecting
-          aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress'
+          echo "Fetching instance IP..."
+          INSTANCE_IP=$(aws ec2 describe-instances \
+            --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
+          echo "Instance IP: $INSTANCE_IP"
+          echo "INSTANCE_IP=$INSTANCE_IP" >> $GITHUB_ENV
 
       - name: Build Amazon Linux 3 AMI
         run: |
@@ -48,15 +50,4 @@ jobs:
             -var "subnet_id=${{ secrets.AWS_SUBNET_ID }}" \
             -var "iam_instance_profile=${{ secrets.AWS_IAM_INSTANCE_PROFILE }}" \
             -var "source_ami=${{ secrets.AWS_SOURCE_AMAZON_AMI }}" \
-            -var "key_pair_name=${{ secrets.AWS_KEY_PAIR_NAME }}" \
             packer/templates/amazon-linux.pkr.hcl
-
-      - name: Build Ubuntu 24.04 AMI
-        run: |
-          packer build \
-            -var "aws_region=${{ secrets.AWS_REGION }}" \
-            -var "subnet_id=${{ secrets.AWS_SUBNET_ID }}" \
-            -var "iam_instance_profile=${{ secrets.AWS_IAM_INSTANCE_PROFILE }}" \
-            -var "source_ami=${{ secrets.AWS_SOURCE_UBUNTU_AMI }}" \
-            -var "key_pair_name=${{ secrets.AWS_KEY_PAIR_NAME }}" \
-            packer/templates/ubuntu.pkr.hcl
