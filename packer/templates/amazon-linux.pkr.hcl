@@ -9,13 +9,7 @@ source "amazon-ebs" "amazon_linux" {
   subnet_id           = var.subnet_id
   iam_instance_profile = var.iam_profile
   ami_name            = "golden-ami-amazon-linux3"
-  source_ami_filter {
-    filters = {
-      name = var.source_ami
-    }
-    most_recent = true
-    owners      = ["amazon"]
-  }
+  source_ami          = var.source_ami
   ssh_username = "ec2-user"
 }
 
