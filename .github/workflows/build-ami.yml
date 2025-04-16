@@ -31,7 +31,7 @@ jobs:
 
       - name: Load SSH Key
         run: |
-          mkdir -p ~/.ssh  # ✅ Ensures SSH directory exists
+          mkdir -p ~/.ssh  # ✅ Ensure SSH directory exists
           echo "${{ secrets.PACKER_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
@@ -42,6 +42,11 @@ jobs:
             --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
           echo "Instance IP: $INSTANCE_IP"
           echo "INSTANCE_IP=$INSTANCE_IP" >> $GITHUB_ENV
+
+      - name: Test SSH Connection
+        run: |
+          echo "Checking SSH authentication manually..."
+          ssh -v -o "StrictHostKeyChecking=no" -i ~/.ssh/id_rsa ec2-user@${{ env.INSTANCE_IP }} || echo "❌ SSH Authentication Failed"
 
       - name: Build Amazon Linux 3 AMI
         run: |
