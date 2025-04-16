@@ -10,7 +10,7 @@ source "amazon-ebs" "amazon_linux" {
   iam_instance_profile = var.iam_profile
   ami_name            = "golden-ami-amazon-linux3"
   source_ami          = var.source_ami
-  ssh_username = "ec2-user"
+  ssh_username        = "ec2-user"
 }
 
 build {

@@ -9,14 +9,8 @@ source "amazon-ebs" "ubuntu" {
   subnet_id           = var.subnet_id
   iam_instance_profile = var.iam_profile
   ami_name            = "golden-ami-ubuntu-24"
-  source_ami_filter {
-    filters = {
-      name = var.source_ami
-    }
-    most_recent = true
-    owners      = ["099720109477"]
-  }
-  ssh_username = "ubuntu"
+  source_ami          = var.source_ami
+  ssh_username        = "ubuntu"
 }
 
 build {
