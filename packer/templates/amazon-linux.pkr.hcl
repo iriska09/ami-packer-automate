@@ -11,15 +11,16 @@ source "amazon-ebs" "amazon_linux" {
   subnet_id               = var.subnet_id
   ami_name            = "secure-amazon-linux3-2025"
   associate_public_ip_address = true
-  metadata_options {
+    metadata_options {
     http_tokens = "optional"
-  }
-  user_data = <<EOF
-#!/bin/bash
-echo "Forcing SSH key injection..."
-cp /home/ec2-user/.ssh/authorized_keys /root/.ssh/authorized_keys
-EOF
+    }
+    user_data = <<EOF
+    #!/bin/bash
+    echo "Forcing SSH key injection..."
+    cp /home/ec2-user/.ssh/authorized_keys /root/.ssh/authorized_keys
+    EOF
 }
+
 
 
 build {
